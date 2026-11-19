@@ -1,0 +1,47 @@
+.trial-switch,.trial-actions,.trial-line,.trial-byline{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.trial-switch{padding:4px;background:#1f1a29;border:1px solid #44354f;border-radius:10px;gap:3px}
+.trial-mark{font-size:11px;color:#cbbce2;margin:0 8px;letter-spacing:.04em}
+.trial-switch a{display:inline-flex;align-items:center;gap:6px;border-radius:6px;padding:6px 10px;color:#d6cce0;font-weight:600;font-size:13px}
+.trial-switch a[aria-current=page]{color:#1d142b;background:#b69af7}
+.trial-switch .icon{width:15px;height:15px}
+.trial-topbar{justify-content:space-between!important;gap:12px;height:auto!important;min-height:62px;flex-wrap:wrap;padding-block:10px!important}
+.trial-test-link{color:var(--violet);font-size:13px;font-weight:600}
+.trial-desk{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 24px;background:linear-gradient(110deg,#302436,#1b1925);flex-wrap:wrap}
+.trial-desk h2,.trial-room h2,.trial-room h3{overflow-wrap:anywhere}
+.trial-desk p,.trial-room p,.trial-report{white-space:pre-line;overflow-wrap:anywhere}
+.trial-player-shell{min-height:100vh}
+.trial-player-shell .topbar{padding-inline:max(20px,calc((100vw - 1120px)/2));background:#14121c}
+.trial-player-shell main{max-width:1180px}
+.trial-room{display:grid;gap:22px}.trial-stack,.trial-mission,.trial-scene{display:grid;gap:14px;align-content:start;min-width:0}
+.trial-hero{position:relative;isolation:isolate;overflow:hidden;border:1px solid color-mix(in srgb,var(--house),#201826 65%);border-radius:16px;background:linear-gradient(110deg,#1c1623,color-mix(in srgb,var(--house),#15101e 80%));min-height:206px;display:flex;align-items:center}
+.trial-art.portrait{position:absolute;z-index:-1;right:0;top:0;width:38%;height:100%;mask-image:linear-gradient(90deg,transparent,#000 65%);opacity:.86}
+.trial-hero-copy{padding:clamp(20px,4vw,42px);width:70%}
+.trial-hero h1{margin:6px 0 10px;font-size:clamp(30px,4vw,51px);line-height:1.05}.trial-hero h1 span,.trial-hero .section-kicker{color:var(--house)}.trial-hero p{color:#dad4dd;max-width:55ch}
+.trial-byline{margin-top:13px;font-size:13px;font-weight:600}.trial-byline span{color:var(--house)}
+.trial-scene,.trial-form{max-width:850px;width:100%;margin:auto}.trial-scene h2{max-width:55ch}
+.trial-steps{display:flex;gap:6px}.trial-steps i{flex:1;height:3px;background:#423649}.trial-steps i.filled{background:#ba9ce9}
+.trial-choices{display:grid;grid-template-columns:1fr;gap:10px}
+.trial-choices button{display:flex;gap:12px;align-items:center;background:#24202e;border:1px solid #473c52;border-radius:8px;padding:15px;text-align:left;font-size:15px;line-height:1.45}
+.trial-choices button:hover{border-color:#c4a9f5;background:#30273b}.trial-choices button>span{color:#ba9feb;font:600 16px var(--display)}
+.trial-choices .trial-house-choice .icon{color:var(--house);width:24px;height:24px}
+.trial-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:20px;align-items:start}
+.trial-line{justify-content:space-between}.trial-mission .standard-form{margin-top:4px;gap:10px}
+.trial-room .standard-form .button,.trial-room .text-button{justify-self:start;align-self:start}.trial-room .text-button{margin-top:8px}
+.trial-note{border-left:2px solid var(--house,#ae96f4);padding-left:12px}.trial-note b{font-size:13px}
+.trial-room li{margin:5px 0;font-size:14px;color:#c6bfcd}.trial-room ul{padding-left:20px}
+.trial-room .trial-check{display:flex;flex-direction:row;align-items:center;gap:8px}.trial-room .trial-check input{width:auto;min-height:0;accent-color:#b69af7}
+.trial-room button:disabled{opacity:.5;cursor:default}
+.trial-report{padding:10px 14px;background:#272031;border-radius:8px;margin-block:10px;font-size:14px}
+@media(max-width:760px){.trial-topbar{padding-inline:18px!important}.trial-layout{grid-template-columns:1fr}.trial-switch a{min-height:40px}.trial-hero-copy{width:84%}.trial-actions .button{min-height:42px}.trial-topbar .breadcrumb{display:none}.trial-topbar{justify-content:center!important}}
+@media(max-width:480px){.trial-choices{grid-template-columns:1fr}.trial-switch a span{display:none}.trial-mark{margin:0 3px}.trial-hero-copy{width:94%}.trial-art.portrait{opacity:.38}.trial-desk{padding:16px}.trial-room .panel{padding:18px}.trial-line{align-items:flex-start}}
+
+.trial-room .trial-stack .panel h2{margin:.4rem 0 .5rem}
+.trial-room .trial-stack .trial-scene h2{margin:0}
+.trial-room .trial-mission h3{font-size:1.25rem}
+.trial-room .trial-mission p,.trial-room .trial-scene p{font-size:.95rem}
+.trial-art img{width:100%;height:100%;object-fit:cover}
+.trial-byline,.trial-switch{max-width:100%}
+.trial-hero h1,.trial-byline{overflow-wrap:anywhere}
+.trial-switch a,.trial-switch a:last-child{margin:0}
+.trial-switch a:last-child::after{content:none}
+.trial-switch a[aria-current=page]:hover{color:#1d142b;background:#c3aafa}
