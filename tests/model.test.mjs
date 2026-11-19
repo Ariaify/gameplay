@@ -12,3 +12,49 @@ test('profiel bewerken bewaart punten, eigen avatar, doel en eigenschappen',()=>
 test('missies vereisen een bestaande speler en geldige punten',()=>{const s=initialState(),m={id:'new',title:'Groei',description:'Een eerste stap',player:'p1',plus:10,minus:0};assert.equal(reducer(s,{type:'add-mission',mission:m}).missions.length,4);assert.strictEqual(reducer(s,{type:'add-mission',mission:{...m,player:'missing'}}),s);assert.strictEqual(reducer(s,{type:'add-mission',mission:{...m,plus:NaN}}),s);});
 test('levels en voortgang blijven geldig bij negatieve punten',()=>{assert.deepEqual(levelInfo(-15),{level:1,progress:0,next:100,remaining:100});assert.deepEqual(levelInfo(120),{level:2,progress:20,next:200,remaining:80});});
 test('aanmoedigen kan worden in- en uitgeschakeld',()=>{const s=initialState(),a={type:'like',id:'s1'};const next=reducer(s,a);assert.equal(next.posts[0].likes,1);assert.equal(next.posts[0].liked,true);const last=reducer(next,a);assert.equal(last.posts[0].likes,0);assert.equal(last.posts[0].liked,false);});
+
+test('beschadigde records wissen de overige browsergegevens niet',()=>{
+ const saved=initialState();
+ saved.players[0].score=208;
+ saved.players.unshift(null,{id:'broken',name:null,role:42,score:'geen getal',traits:[null,{naam:'Moedig'},'Creatief']});
+ saved.missions.push(null,{...saved.missions[0],id:'orphan',player:'missing'});
+ saved.posts.push(null,{id:'empty',text:null});
+ saved.log.push(null,{id:'orphan-log',player:'missing',delta:10});
+ const next=migrateState(saved);
+ assert.equal(next.players.find(p=>p.id==='p1').score,208);
+ assert.equal(next.players.find(p=>p.id==='broken').name,'Speler');
+ assert.equal(next.players.find(p=>p.id==='broken').score,0);
+ assert.deepEqual(next.players.find(p=>p.id==='broken').traits,['Creatief']);
+ assert.equal(next.missions.length,3);
+ assert.equal(next.posts.length,1);
+ assert.equal(next.log.length,0);
+});
+
+test('migratie houdt geldige beoordelingen intact en herstelt ongeldige puntwaarden',()=>{
+ const saved=reducer(initialState(),{type:'judge',id:'m1',result:'won',reason:'Goed gedaan',logId:'l1',date:'2026-11-05'});
+ saved.missions[1].plus='30';
+ saved.missions[1].minus=-5;
+ const next=migrateState(saved);
+ assert.equal(next.players[0].score,145);
+ assert.equal(next.missions[0].status,'won');
+ assert.deepEqual(next.log,saved.log);
+ assert.equal(next.missions[1].plus,0);
+ assert.equal(next.missions[1].minus,0);
+ assert.strictEqual(reducer(next,{type:'judge',id:'m1',result:'won',reason:'Opnieuw'}),next);
+});
+
+test('dubbele records kunnen geen dubbele missies of berichten opleveren',()=>{
+ const s=initialState();
+ assert.strictEqual(reducer(s,{type:'add-mission',mission:s.missions[0]}),s);
+ assert.strictEqual(reducer(s,{type:'post',post:s.posts[0]}),s);
+ const saved=structuredClone(s);
+ saved.players.push(saved.players[0]);saved.missions.push(saved.missions[0]);saved.posts.push(saved.posts[0]);
+ const next=migrateState(saved);
+ assert.equal(next.players.length,4);assert.equal(next.missions.length,3);assert.equal(next.posts.length,1);
+});
+
+test('ongeldige opgeslagen aanmoedigingen worden nooit negatief',()=>{
+ const s=initialState();s.posts[0].liked=true;s.posts[0].likes=-3;
+ const next=reducer(migrateState(s),{type:'like',id:'s1'});
+ assert.equal(next.posts[0].likes,0);assert.equal(next.posts[0].liked,false);
+});

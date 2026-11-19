@@ -13,3 +13,5 @@ input,select,textarea{font:400 12px/1.5 'DM Sans',sans-serif;width:100%;backgrou
 /* Keep atlas portraits square even when a long biography expands the profile. */
 .profile-portrait{align-self:stretch;aspect-ratio:auto;min-height:360px;overflow:hidden;background:#1b1623}.profile-portrait>.portrait{position:absolute;top:0;width:100%;height:auto;min-height:0;aspect-ratio:1/1}.profile-portrait-shade{background:linear-gradient(0deg,#1b1623,transparent 60%)}.profile-role>.personal-symbol{font-size:16px;line-height:1;color:var(--character-color);padding:0;margin-right:2px}.character-card:focus-visible{outline:2px solid var(--character-color);outline-offset:5px}
 @media(max-width:620px){.profile-portrait{aspect-ratio:1/1;min-height:0}.profile-portrait>.portrait{height:100%;aspect-ratio:1/1}.profile-portrait-shade{background:linear-gradient(0deg,#1b1623,transparent 45%)}}
+
+.storage-error{flex-wrap:wrap}.storage-error>span{flex:1 1 240px}.storage-error .text-button{flex-shrink:0}

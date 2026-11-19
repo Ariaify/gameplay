@@ -16,12 +16,30 @@ export function initialState(){return { players: seedPlayers.map(p=>({...p,trait
  {id:'m2',title:'Stap buiten je comfortzone',description:'Begin een gesprek met iemand die je nog niet goed kent.',player:'p2',plus:30,minus:5,status:'open'},
  {id:'m3',title:'Versla de uitstelgedachte',description:'Schrijf één uitstelgedachte op en zet daar een concrete eerste stap tegenover.',player:'p3',plus:20,minus:0,status:'open'},
  ], posts:[{id:'s1',author:'Spelleider',text:'Welkom in LevelUp World! 🌱 Hier groeien we samen. Begin klein, moedig elkaar aan en maak van elke missie een stap vooruit.',likes:0,liked:false,date:new Date().toISOString()}],log:[] };}
+const isText = value => typeof value === 'string' && value.trim().length > 0;
+const textOr = (value, fallback = '') => typeof value === 'string' ? value : fallback;
+const integerOr = (value, fallback = 0) =>
+ typeof value === 'number' && Number.isSafeInteger(value) ? value : fallback;
+const validPoints = value => Number.isInteger(value) && value >= 0 && value <= 10000;
+function uniqueRecords(items) {
+ const ids = new Set();
+ return items.filter(item => {
+  if (!item || !isText(item.id) || ids.has(item.id)) return false;
+  ids.add(item.id);
+  return true;
+ });
+}
 export function migrateState(value){
  if(!value||!Array.isArray(value.players)||!Array.isArray(value.missions)||!Array.isArray(value.posts)||!Array.isArray(value.log))return initialState();
- return {...value,players:value.players.map((p,i)=>{
+ const players = uniqueRecords(value.players).map((p,i)=>{
   const seed=seedPlayers.find(x=>x.id===p.id&&x.name===p.name);
-  return {...p,portrait:ARCHETYPES[p.portrait]?p.portrait:p.type==='npc'?'shadow':seed?.portrait||['nova','atlas','echo'][i%3],goal:typeof p.goal==='string'?p.goal:seed?.goal||'',traits:Array.isArray(p.traits)?p.traits:seed?.traits||[],image:typeof p.image==='string'?p.image:''};
- })};
+  return {...p,name:isText(p.name)?p.name:'Speler',role:isText(p.role)?p.role:'Avonturier',type:p.type==='npc'?'npc':'hero',bio:textOr(p.bio),avatar:textOr(p.avatar),score:integerOr(p.score),portrait:Object.hasOwn(ARCHETYPES,p.portrait)?p.portrait:p.type==='npc'?'shadow':seed?.portrait||['nova','atlas','echo'][i%3],goal:textOr(p.goal,seed?.goal||''),traits:(Array.isArray(p.traits)?p.traits:seed?.traits||[]).filter(isText),image:textOr(p.image)};
+ });
+ const playerIds = new Set(players.map(p=>p.id));
+ const missions = uniqueRecords(value.missions).filter(m=>playerIds.has(m.player)&&isText(m.title)&&['open','won','lost'].includes(m.status)).map(m=>({...m,description:textOr(m.description),plus:validPoints(m.plus)?m.plus:0,minus:validPoints(m.minus)?m.minus:0}));
+ const posts = uniqueRecords(value.posts).filter(p=>isText(p.text)).map(p=>({...p,author:isText(p.author)?p.author:'Spelleider',date:textOr(p.date),liked:p.liked===true,likes:Math.max(p.liked===true?1:0,integerOr(p.likes))}));
+ const log = uniqueRecords(value.log).filter(l=>playerIds.has(l.player)&&Number.isSafeInteger(l.delta)).map(l=>({...l,title:textOr(l.title),reason:textOr(l.reason),date:textOr(l.date)}));
+ return {...value,players,missions,posts,log};
 }
 export function readState(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?migrateState(JSON.parse(raw)):initialState();}catch{return initialState();}}
 export function levelInfo(score){const safe=Math.max(0,score);const level=Math.floor(safe/100)+1;return {level,progress:safe%100,next:level*100,remaining:level*100-safe};}
@@ -30,22 +48,22 @@ export function reducer(state,action){
  switch(action.type){
   case 'save-player': {
    const p=action.player;
-   if(!p.name?.trim()||!p.role?.trim())return state;
+   if(!p||!isText(p.id)||!isText(p.name)||!isText(p.role))return state;
    const exists=state.players.some(x=>x.id===p.id);
    return {...state,players:exists?state.players.map(x=>x.id===p.id?{...x,...p,score:x.score}:x):[...state.players,{...p,score:0}]};
   }
   case 'add-mission': {
    const m=action.mission;
-   if(!state.players.some(p=>p.id===m.player)||!m.title?.trim()||!m.description?.trim()||![m.plus,m.minus].every(n=>Number.isInteger(n)&&n>=0&&n<=10000))return state;
+   if(!m||!isText(m.id)||state.missions.some(x=>x.id===m.id)||!state.players.some(p=>p.id===m.player)||!isText(m.title)||!isText(m.description)||![m.plus,m.minus].every(validPoints))return state;
    return {...state,missions:[{...m,status:'open'},...state.missions]};
   }
   case 'judge': {
    const m=state.missions.find(m=>m.id===action.id);
-   if(!m||m.status!=='open'||!action.reason?.trim()||!['won','lost'].includes(action.result))return state;
+   if(!m||m.status!=='open'||!state.players.some(p=>p.id===m.player)||!isText(action.reason)||!['won','lost'].includes(action.result))return state;
    const delta=action.result==='won'?m.plus:-m.minus;
    return {...state,missions:state.missions.map(x=>x.id===m.id?{...x,status:action.result}:x),players:state.players.map(p=>p.id===m.player?{...p,score:p.score+delta}:p),log:[...state.log,{id:action.logId,player:m.player,title:m.title,delta,reason:action.reason,date:action.date}]};
   }
-  case 'post': return action.post.text.trim()?{...state,posts:[action.post,...state.posts]}:state;
+  case 'post': return action.post&&isText(action.post.id)&&isText(action.post.text)&&!state.posts.some(p=>p.id===action.post.id)?{...state,posts:[action.post,...state.posts]}:state;
   case 'like': return {...state,posts:state.posts.map(p=>p.id===action.id?{...p,liked:!p.liked,likes:p.likes+(p.liked?-1:1)}:p)};
   default:return state;
  }

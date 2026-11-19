@@ -31,13 +31,20 @@ Open de lokale URL die Vite toont. De startpagina is de spelerscollectie. Klik o
 npm run check
 ```
 
-Dit draait de tests en maakt daarna de productiebuild in `dist/`.
+Dit draait de 12 tests voor spelregels en gegevensherstel en maakt daarna de productiebuild in `dist/`.
+
+De browsertests doorlopen de schermen en spelhandelingen op desktop- en mobiel formaat. Ze controleren ook hosting onder `/gameplay/`, avataruploads, export, toetsenbordfocus en foutmeldingen bij volle browseropslag:
+
+```sh
+npx playwright install chromium
+npm run test:e2e
+```
 
 ```sh
 npm run preview
 ```
 
-De workflow in `.github/workflows/ci.yml` voert dezelfde controles uit bij een push of pull request. Deze workflow publiceert de app niet.
+De workflow in `.github/workflows/ci.yml` voert de spelregeltests, productiebuild en 14 browsertests uit bij een push of pull request. Deze workflow publiceert de app niet.
 
 ## Projectstructuur
 
@@ -49,6 +56,7 @@ De workflow in `.github/workflows/ci.yml` voert dezelfde controles uit bij een p
 | `src/style.css` | Responsieve vormgeving en portretpresentatie |
 | `public/art/guild-portraits.png` | De vier karakterportretten als atlas |
 | `tests/model.test.mjs` | Databehoud, beoordelingen, scores, profielen en levels |
+| `tests/browser/app.spec.js` | Desktop- en mobiele tests van de productiebuild |
 | `DESIGN.md` | Grafisch concept en herkomst van de portretten |
 | `ROADMAP.md` | Volgende stappen voor accounts, gedeelde opslag en AI |
 
@@ -56,7 +64,7 @@ De workflow in `.github/workflows/ci.yml` voert dezelfde controles uit bij een p
 
 Dit is een browserprototype. De Spelleidermodus is een lokale interface en biedt nog geen beveiligde beheerdersrechten. Spelersprofielen zijn nog geen accounts waarmee deelnemers kunnen inloggen. De community en scores worden nog niet tussen apparaten gedeeld. De AI-pagina toont geplande rollen en verstuurt geen AI-aanvragen.
 
-De app bewaart gegevens in `localStorage` onder `levelup-world-v2`. De bestaande gegevens op dezelfde browser en hetzelfde webadres blijven bruikbaar. Een ander domein krijgt eigen browseropslag; gegevens verhuizen daar niet automatisch naartoe. Eigen avatars blijven eveneens lokaal. De JSON-export is een back-up; een importfunctie is nog niet aanwezig.
+De app bewaart gegevens in `localStorage` onder `levelup-world-v2`. De bestaande gegevens op dezelfde browser en hetzelfde webadres blijven bruikbaar. Gedeeltelijk beschadigde gegevens worden opgeschoond: geldige profielen, beoordelingen en berichten blijven behouden; ongeldige of dubbele records en missies zonder speler worden overgeslagen. Een ander domein krijgt eigen browseropslag; gegevens verhuizen daar niet automatisch naartoe. Eigen avatars blijven eveneens lokaal. De JSON-export is een back-up; een importfunctie is nog niet aanwezig. Als opslaan mislukt, blijft een waarschuwing met exportknop zichtbaar, zodat je de laatste wijzigingen kunt downloaden voordat je de pagina sluit.
 
 De vier voorbeeldpersonages hebben startpunten. Nieuwe spelers beginnen op 0 XP. Een beoordeling wijzigt de score en schrijft de reden naar het logboek. Een al beoordeelde missie kan niet opnieuw punten opleveren.
 
