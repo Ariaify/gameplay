@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
+    "dev:proef": "vite --mode speeltest",
+    "build:proef": "vite build --mode speeltest",
     "test": "node --test tests/*.test.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "check": "npm test && npm run build",

@@ -13,6 +13,17 @@ npm run dev
 
 Open de lokale URL die Vite toont. De startpagina is de spelerscollectie. Klik op een personage voor het volledige profiel.
 
+## Testen als spelleider en proefspeler
+
+Start de lokale testomgeving in PowerShell met `npm.cmd run dev:proef` (na `npm.cmd ci`). Onder macOS of Linux gebruik je `npm run dev:proef`. Open het lokale adres dat Vite toont. Vanuit de gewone app opent **Open testomgeving** dezelfde proef via `?test=1`. Voor een afzonderlijke testbuild gebruik je `npm run build:proef`.
+
+1. Kies bovenaan **Proefspeler** om als Rune te spelen. **Breek het ijs** staat klaar. Vul een verslag in en lever het in.
+2. Kies **Spelleider**. In het proefprofiel zie je het verslag. Beoordeel de missie en geef een toelichting.
+3. Ga terug naar **Proefspeler** voor de feedback en XP. Je kunt in het proefprofiel ook nieuwe missies toewijzen.
+4. Optioneel doorloopt Rune de gildeproef, kiest een persoonlijk doel en maakt een eigen missie. Via **Proefspeler opnieuw starten** in het proefprofiel kun je opnieuw beginnen.
+
+De proef start met een kopie van de gildegegevens uit deze browser en voegt één proefspeler toe. Beide weergaven gebruiken samen hun eigen lokale testopslag (`levelup-gilde-proef-v1`). Testvoortgang blijft na herladen beschikbaar. Voor wisselen tussen de rollen is geen account nodig.
+
 ## Wat werkt er?
 
 - Speler- en fictieve evil-NPC-profielen toevoegen en bewerken.
@@ -31,7 +42,7 @@ Open de lokale URL die Vite toont. De startpagina is de spelerscollectie. Klik o
 npm run check
 ```
 
-Dit draait de 12 tests voor spelregels en gegevensherstel en maakt daarna de productiebuild in `dist/`.
+Dit draait de tests voor spelregels en gegevensherstel en maakt daarna de productiebuild in `dist/`.
 
 De browsertests doorlopen de schermen en spelhandelingen op desktop- en mobiel formaat. Ze controleren ook hosting onder `/gameplay/`, avataruploads, export, toetsenbordfocus en foutmeldingen bij volle browseropslag:
 
@@ -44,7 +55,7 @@ npm run test:e2e
 npm run preview
 ```
 
-De workflow in `.github/workflows/ci.yml` voert de spelregeltests, productiebuild en 14 browsertests uit bij een push of pull request. Deze workflow publiceert de app niet.
+De workflow in `.github/workflows/ci.yml` voert de spelregeltests, productiebuild en de browsertests uit bij een push of pull request. Deze workflow publiceert de app niet.
 
 ## Projectstructuur
 

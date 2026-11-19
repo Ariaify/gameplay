@@ -1,0 +1,99 @@
+.identity-card {
+  --edge: color-mix(in srgb, var(--character-color) 24%, #282132);
+  display: grid;
+  grid-template-columns: minmax(14rem, 33%) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--edge);
+  border-radius: 18px;
+  background: radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--character-color) 10%, transparent), transparent 70%), #1b1722;
+}
+.identity-art {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  isolation: isolate;
+  container-type: size;
+  background: #201c27;
+}
+.identity-art .portrait {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: max(100cqw, 100cqh);
+  height: max(100cqw, 100cqh);
+  transform: translate(-50%, -50%);
+}
+.identity-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(0deg, #151019df, transparent 40%);
+}
+.identity-art .alignment {left: 1.25rem; top: 1.25rem; z-index: 1}
+.identity-emblem {
+  position: absolute;
+  inset: auto 1.25rem 1.25rem;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  color: #fff;
+  font: 600 1.05rem var(--display);
+  text-shadow: 0 1px 4px #110e14;
+}
+.identity-emblem .icon {color: var(--character-color); width: 1.7rem; height: 1.7rem}
+.identity-copy {display: grid; align-content: center; gap: .8rem; padding: clamp(1.35rem, 3.2vw, 3rem); min-width: 0; overflow-wrap: anywhere}
+.identity-role {display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; color: var(--character-color); font-weight: 600; font-size: .88rem}
+.identity-house {color: #d1c9da; border-left: 1px solid var(--edge); padding-left: .65rem}
+.identity-copy h1 {font-size: clamp(2.45rem, 4vw, 4.3rem); line-height: .99; letter-spacing: -.045em}
+.identity-copy .identity-bio {font-size: 1rem; line-height: 1.55; max-width: 60ch; color: #cdcad5; white-space: pre-line}
+.identity-copy .trait-list {margin: 0}
+.identity-copy .trait-list span {font-size: .78rem; color: #d2cadb; border-color: var(--edge); background: #211b28}
+.identity-goal {display: flex; align-items: flex-start; gap: .7rem; border-left: 2px solid var(--character-color); padding: .55rem .8rem; background: linear-gradient(90deg, color-mix(in srgb,var(--character-color) 7%,transparent),transparent)}
+.identity-goal .icon {width: 1rem; height: 1rem; color: var(--character-color); margin-top: .12rem}
+.identity-goal h2 {font-size: .85rem; letter-spacing: 0; color: var(--character-color)}
+.identity-goal p {font-size: 1rem; margin-top: .2rem; line-height: 1.45; color: #e8e4ed}
+.identity-copy .profile-actions {margin-top: .2rem}
+.identity-copy .button {min-height: 42px; font-size: .875rem}
+.identity-progress {grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(9rem, 1fr) auto; align-items: center; gap: clamp(1rem, 3vw, 3rem); border-top: 1px solid var(--edge); padding: 1.05rem clamp(1.1rem, 2.4vw, 2.3rem); background: #17141d}
+.identity-level {display: flex; align-items: center; gap: .55rem; color: var(--character-color); font: 500 1rem var(--display); white-space: nowrap}
+.identity-level strong {font-size: 1.5rem}
+.identity-progress .profile-xp {width: 100%; max-width: 28rem; margin: 0}
+.identity-progress .xp-track {height: 6px}
+.identity-progress .xp-block > p {font-size: .78rem; margin-top: .35rem; color: #c0b9c9}
+.identity-counts {display: flex; align-items: center; gap: clamp(.8rem, 2vw, 2rem); margin: 0}
+.identity-counts div {display: flex; flex-direction: column-reverse; gap: .15rem; align-items: center}
+.identity-counts dt {font-size: .8rem; color: #c4bdce}
+.identity-counts dd {font: 600 1.45rem var(--display); margin: 0}
+.profile-workspace {display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(15rem, 1fr); gap: 1.4rem; align-items: start; margin-top: 1.6rem}
+.profile-workspace .profile-main,.profile-tools {min-width: 0}
+.profile-tools,.mission-group {display: grid; gap: .85rem}
+.mission-group-title {display: flex; align-items: center; gap: .55rem; color: #ddd7e7; font-size: 1rem}
+.mission-group-title span {font: 500 .8rem var(--display); border-radius: 4px; padding: .15rem .4rem; color: #d1c4e4; background: #332b40}
+.profile-tools h2 {font-size: 1.12rem}
+.medal-list {list-style: none; padding: 0; margin: .45rem 0 0}
+.medal-list li {display: flex; align-items: center; gap: .75rem; padding: .8rem 0; border-bottom: 1px solid var(--line)}
+.medal-list li:last-child {border: 0; padding-bottom: 0}
+.medal-icon {display: grid; place-items: center; width: 2.2rem; height: 2.2rem; color: #a9a0b5; background: #26232d; border: 1px solid #44404d; border-radius: 10px}
+.medal-list b,.medal-list small {display: block}
+.medal-list b {font-size: .94rem}
+.medal-list small {margin-top: .15rem; font-size: .8rem; color: #b6acbf}
+.medal-list .earned .medal-icon {background: #352c1f; border-color: #665235; color: #e6be7d}
+.medal-list li > .icon {margin-left: auto; width: 1rem; color: #d4ae71}
+.profile-tools .trial-desk {margin: 0}
+.house-room .section-kicker {color: var(--house)}
+@media (max-width: 900px) {
+  .identity-progress {grid-template-columns: auto minmax(0, 1fr)}
+  .identity-counts {grid-column: 1 / -1; border-top: 1px solid var(--edge); padding-top: .7rem; justify-content: space-around}
+  .identity-progress .profile-xp {max-width: none}
+}
+@media (max-width: 700px) {
+  .profile-workspace {grid-template-columns: minmax(0,1fr)}
+}
+@media (max-width: 620px) {
+  .identity-card {grid-template-columns: minmax(0,1fr)}
+  .identity-art {min-height: 0; height: clamp(12.5rem, 60vw, 19rem)}
+  .identity-art .portrait {top: 0; transform: translate(-50%, -10%)}
+  .identity-copy {padding: 1.25rem}
+  .identity-progress {gap: .8rem; padding: .9rem 1.15rem}
+}
