@@ -11,7 +11,7 @@ test('proefmissie doorloopt beide rollen en blijft gescheiden van het gilde', as
   await expect(page.locator('.character-card')).toHaveCount(5);
   const switcher=page.getByRole('navigation',{name:'Testweergave'});
   await switcher.getByRole('link',{name:/Proefspeler/}).click();
-  await expect(page.getByRole('heading',{name:'Welkom, Rune.'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Rune',level:1})).toBeVisible();
   await expect(page.getByRole('button',{name:'Goedkeuren'})).toHaveCount(0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   const mission=page.getByRole('article').filter({has:page.getByRole('heading',{name:'Breek het ijs'})});
@@ -21,6 +21,7 @@ test('proefmissie doorloopt beide rollen en blijft gescheiden van het gilde', as
   await page.reload();
   await switcher.getByRole('link',{name:'Spelleider'}).click();
   const review=page.locator('.mission-card').filter({hasText:'Breek het ijs'});
+  await expect(page.getByRole('region',{name:'Te beoordelen',exact:true})).toContainText('Breek het ijs');
   await expect(review).toContainText('Ik vroeg Nova');
   await review.getByRole('button',{name:'Goedkeuren'}).click();
   const dialog=page.getByRole('dialog');
@@ -32,14 +33,40 @@ test('proefmissie doorloopt beide rollen en blijft gescheiden van het gilde', as
   await dialog.getByRole('button',{name:'Missie toevoegen'}).click();
   await switcher.getByRole('link',{name:/Proefspeler/}).click();
   await page.reload();
-  await expect(mission).toContainText('Goed doorgevraagd!');
-  await expect(page.locator('.trial-byline')).toContainText('25 XP');
+  await expect(page.getByRole('region',{name:'Afgerond',exact:true})).toContainText('Goed doorgevraagd!');
+  await expect(page.getByRole('region',{name:'Spelervoortgang'})).toContainText('25 XP');
   await expect(page.getByRole('heading',{name:'Mijn vervolgmissie'})).toBeVisible();
   await expect(page.getByRole('heading',{name:'Stap buiten je comfortzone'})).toHaveCount(0);
   await switcher.getByRole('link',{name:'Spelleider'}).click();
   await page.getByRole('button',{name:'Proefspeler opnieuw starten'}).click();
   await dialog.getByRole('button',{name:'Start opnieuw'}).click();
-  await expect(page.locator('.trial-byline')).toContainText('0 XP');
+  await expect(page.getByRole('region',{name:'Spelervoortgang'})).toContainText('0 XP');
   await expect(mission.getByLabel('Mijn verslag')).toBeEmpty();
   expect(await normalSave()).toBe(before);
+});
+
+test('Rune kan het eigen profiel aanpassen en de spelleider ziet dezelfde gegevens', async ({page}) => {
+  await page.route('https://fonts.googleapis.com/**',route=>route.abort());
+  await page.goto('./?test=1#proefspeler');
+  await page.getByRole('button',{name:'Profiel bewerken',exact:true}).click();
+  const editor=page.getByRole('dialog');
+  await editor.getByLabel('Naam',{exact:true}).fill('Rune Winter');
+  await editor.getByLabel('Persoonlijk doel',{exact:true}).fill('Deze week één teamgenoot beter leren kennen.');
+  await editor.locator('input[name="traits"]').fill('Geduldig, Avontuurlijk');
+  await editor.getByRole('button',{name:'Hoeder',exact:true}).click();
+  await editor.getByRole('button',{name:'Profiel opslaan'}).click();
+  await expect(page).toHaveURL(/#proefspeler$/);
+  await page.reload();
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Rune Winter');
+  await expect(page.getByText('Deze week één teamgenoot beter leren kennen.',{exact:true})).toBeVisible();
+  await expect(page.getByRole('img',{name:'Avatar van Rune Winter'})).toHaveClass(/portrait--echo/);
+
+  await page.getByRole('navigation',{name:'Testweergave'}).getByRole('link',{name:'Spelleider'}).click();
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Rune Winter');
+  await expect(page.getByText('Geduldig',{exact:true})).toBeVisible();
+  await expect(page.getByText('Deze week één teamgenoot beter leren kennen.',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Alle personages'}).click();
+  await page.getByRole('button',{name:'Open het profiel van Nova',exact:true}).click();
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Nova');
+  await expect(page.getByText('Deze week één teamgenoot beter leren kennen.',{exact:true})).toHaveCount(0);
 });

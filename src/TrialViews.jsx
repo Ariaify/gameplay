@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Icon from './Icon.jsx';
 import {houses, matches, preferences, questions} from './trial.js';
-import {levelInfo} from './model.js';
+import {ProfileHeader, ProfileMissions} from './ProfileSections.jsx';
 import './trial.css';
 
 export function ModeSwitch({player, id, name}) {
@@ -83,15 +83,7 @@ function PlayStyle({trial,dispatch,onClose}) {
   </form>;
 }
 
-function Goal({p,dispatch}) {
-  const [editing,setEditing]=useState(false),[draft,setDraft]=useState('');
-  if(editing) return <form className="panel standard-form" onSubmit={e=>{e.preventDefault();dispatch({type:'trial-goal',goal:draft});setEditing(false);}}>
-    <label>Mijn persoonlijke doel<input value={draft} required maxLength={180} onChange={e=>setDraft(e.target.value)}/></label>
-    <div className="trial-actions"><button className="button button-primary" disabled={!draft.trim()}>Doel bewaren</button><button type="button" className="button button-secondary" onClick={()=>setEditing(false)}>Annuleren</button></div></form>;
-  return <section className="panel"><div className="section-kicker"><Icon name="target"/> MIJN DOEL</div><h2>{p.goal||'Kies waar je in wilt groeien'}</h2><button className="text-button" onClick={()=>{setDraft(p.goal);setEditing(true);}}>Doel aanpassen</button></section>;
-}
-
-export function PlayerRoom({state, dispatch, portrait}) {
+export function PlayerRoom({state, dispatch, onEdit}) {
   const {trial}=state;
   const player=state.players.find(p=>p.id===trial.id);
   const house=houses[trial.house];
@@ -102,19 +94,13 @@ export function PlayerRoom({state, dispatch, portrait}) {
   const tips=preferences.map((axis,i)=>axis.tips[trial.preferences[i]]).filter(Boolean);
 
   return <div className="trial-room" style={{'--house':house?.color||'#ae96f4'}}>
-    <section className="trial-hero">
-      {portrait}
-      <div className="trial-hero-copy">
-        <div className="section-kicker"><Icon name={house?.icon||'shield'}/>{house?'HUIS '+house.name.toUpperCase():'HET GILDE · PROEFSPELER'}</div>
-        <h1>{house?house.room:`Welkom, ${player.name}`}<span>.</span></h1>
-        <p>{house?house.description:'Hier vind je jouw opdrachten en de feedback van je spelleider.'}</p>
-        <div className="trial-byline">{player.name}<span>·</span>Level {levelInfo(player.score).level}<span>·</span>{player.score} XP</div>
-      </div>
-    </section>
+    <ProfileHeader player={player} state={state} house={house} own>
+      <button className="button button-secondary" onClick={onEdit}><Icon name="edit"/>Profiel bewerken</button>
+    </ProfileHeader>
     <div className="trial-layout">
       <section className="trial-stack">
         <h2>Mijn missies</h2>
-        {missions.map(m=><PlayerMission key={m.id} mission={m} dispatch={dispatch}/>)}
+        <ProfileMissions missions={missions} own>{m=><PlayerMission key={m.id} mission={m} dispatch={dispatch}/>}</ProfileMissions>
         {!missions.length&&<p>Je spelleider kan je een missie toewijzen via je proefprofiel.</p>}
       </section>
       <aside className="trial-stack" aria-label="Mijn gildeprofiel">
@@ -128,7 +114,8 @@ export function PlayerRoom({state, dispatch, portrait}) {
         </section>}
         {!house&&quizOpen&&<GuildQuiz trial={trial} dispatch={dispatch}/>}
         {house&&!hasPersonalMission&&<FirstMission player={player} house={house} dispatch={dispatch}/>}
-        {house&&hasPersonalMission&&<Goal p={player} dispatch={dispatch}/>}
+        {house&&<section className="panel house-room"><div className="section-kicker"><Icon name={house.icon}/>HUIS {house.name.toUpperCase()}</div>
+          <h2>{house.room}</h2><p>{house.description}</p></section>}
         {house&&(styleOpen ? <PlayStyle trial={trial} dispatch={dispatch} onClose={()=>setStyleOpen(false)}/> :
           <section className="panel">
             <div className="section-kicker"><Icon name="compass"/> MIJN SPEELSTIJL</div><h2>Wat helpt jou?</h2>
